@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reality Check - Find Your Ideal Partner Probability</title>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/lucide/0.263.1/lucide.min.css">
+    <style>
+        .slider::-webkit-slider-thumb {
+            appearance: none;
+            height: 20px;
+            width: 20px;
+            border-radius: 50%;
+            background: linear-gradient(to right, #ec4899, #8b5cf6);
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        .slider::-moz-range-thumb {
+            height: 20px;
+            width: 20px;
+            border-radius: 50%;
+            background: linear-gradient(to right, #ec4899, #8b5cf6);
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState } = React;
+
+        // Lucide icons as components
+        const Heart = () => (
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+            </svg>
+        );
+
+        const Calculator = () => (
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="4" y="2" width="16" height="20" rx="2"></rect>
+                <line x1="8" y1="6" x2="16" y2="6"></line>
+                <line x1="16" y1="10" x2="16" y2="10"></line>
+                <line x1="12" y1="10" x2="12" y2="10"></line>
+                <line x1="8" y1="10" x2="8" y2="10"></line>
+                <line x1="16" y1="14" x2="16" y2="14"></line>
+                <line x1="12" y1="14" x2="12" y2="14"></line>
+                <line x1="8" y1="14" x2="8" y2="14"></line>
+                <line x1="16" y1="18" x2="16" y2="18"></line>
+                <line x1="12" y1="18" x2="12" y2="18"></line>
+                <line x1="8" y1="18" x2="8" y2="18"></line>
+            </svg>
+        );
+
+        const TrendingDown = () => (
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="23 18 13.5 8.5 8.5 13.5 1 6"></polyline>
+                <polyline points="17 18 23 18 23 12"></polyline>
+            </svg>
+        );
+
+        const TrendingUp = () => (
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline>
+                <polyline points="17 6 23 6 23 12"></polyline>
+            </svg>
+        );
+
+        const BarChart3 = () => (
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M3 3v18h18"></path>
+                <path d="M18 17V9"></path>
+                <path d="M13 17V5"></path>
+                <path d="M8 17v-3"></path>
+            </svg>
+        );
+
+        const Users = () => (
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
+                <circle cx="9" cy="7" r="4"></circle>
+                <path d="M22 21v-2a4 4 0 0 0-3-3.87"></path>
+                <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+            </svg>
+        );
+
+        const RealityCheckApp = () => {
+            const [formData, setFormData] = useState({
+                minAge: 25,
+                maxAge: 35,
+                minHeight: 170,
+                bodyType: 'any',
+                religion: 'any',
+                minIncome: 30000,
+                education: 'any',
+                location: 'any'
+            });
+
+            const [results, setResults] = useState(null);
+            const [showResults, setShowResults] = useState(false);
+
+            // UK demographic data based on recent statistics
+            const ukDemographics = {
+                totalMales: 33700000,
+                ageDistribution: {
+                    '18-24': 0.08,
+                    '25-34': 0.14,
+                    '35-44': 0.13,
+                    '45-54': 0.13,
+                    '55-64': 0.11,
+                    '65+': 0.41
+                },
+                heightDistribution: {
+                    'under170': 0.15,
+                    '170-175': 0.25,
+                    '175-180': 0.30,
+                    '180-185': 0.20,
+                    'over185': 0.10
+                },
+                bodyTypeDistribution: {
+                    'slim': 0.20,
+                    'athletic': 0.25,
+                    'average': 0.35,
+                    'stocky': 0.15,
+                    'overweight': 0.05
+                },
+                religiousDistribution: {
+                    'christian': 0.46,
+                    'muslim': 0.06,
+                    'hindu': 0.02,
+                    'buddhist': 0.01,
+                    'jewish': 0.005,
+                    'other': 0.025,
+                    'none': 0.44
+                },
+                incomeDistribution: {
+                    'under25k': 0.25,
+                    '25k-35k': 0.30,
+                    '35k-50k': 0.25,
+                    '50k-75k': 0.15,
+                    'over75k': 0.05
+                },
+                educationDistribution: {
+                    'high_school': 0.35,
+                    'college': 0.25,
+                    'bachelors': 0.30,
+                    'masters': 0.08,
+                    'phd': 0.02
+                }
+            };
+
+            const calculateProbability = () => {
+                let probability = 1.0;
+                let factors = [];
+
+                // Age factor
+                const ageRange = formData.maxAge - formData.minAge;
+                let ageFactor = 0;
+                
+                if (formData.minAge >= 25 && formData.maxAge <= 34) {
+                    ageFactor = ukDemographics.ageDistribution['25-34'];
+                } else if (formData.minAge >= 35 && formData.maxAge <= 44) {
+                    ageFactor = ukDemographics.ageDistribution['35-44'];
+                } else {
+                    ageFactor = 0.15;
+                }
+                
+                probability *= ageFactor;
+                factors.push({
+                    factor: 'Age Range',
+                    percentage: (ageFactor * 100).toFixed(1),
+                    impact: ageFactor < 0.1 ? 'High' : ageFactor < 0.15 ? 'Medium' : 'Low'
+                });
+
+                // Height factor
+                let heightFactor = 1.0;
+                if (formData.minHeight >= 180) {
+                    heightFactor = ukDemographics.heightDistribution['180-185'] + ukDemographics.heightDistribution['over185'];
+                } else if (formData.minHeight >= 175) {
+                    heightFactor = ukDemographics.heightDistribution['175-180'] + ukDemographics.heightDistribution['180-185'] + ukDemographics.heightDistribution['over185'];
+                } else if (formData.minHeight >= 170) {
+                    heightFactor = 0.85;
+                }
+                
+                probability *= heightFactor;
+                factors.push({
+                    factor: 'Height Requirement',
+                    percentage: (heightFactor * 100).toFixed(1),
+                    impact: heightFactor < 0.3 ? 'High' : heightFactor < 0.6 ? 'Medium' : 'Low'
+                });
+
+                // Body type factor
+                let bodyTypeFactor = 1.0;
+                if (formData.bodyType !== 'any') {
+                    bodyTypeFactor = ukDemographics.bodyTypeDistribution[formData.bodyType] || 0.2;
+                }
+                
+                probability *= bodyTypeFactor;
+                if (formData.bodyType !== 'any') {
+                    factors.push({
+                        factor: 'Body Type',
+                        percentage: (bodyTypeFactor * 100).toFixed(1),
+                        impact: bodyTypeFactor < 0.2 ? 'High' : bodyTypeFactor < 0.3 ? 'Medium' : 'Low'
+                    });
+                }
+
+                // Religion factor
+                let religionFactor = 1.0;
+                if (formData.religion !== 'any') {
+                    religionFactor = ukDemographics.religiousDistribution[formData.religion] || 0.05;
+                }
+                
+                probability *= religionFactor;
+                if (formData.religion !== 'any') {
+                    factors.push({
+                        factor: 'Religion',
+                        percentage: (religionFactor * 100).toFixed(1),
+                        impact: religionFactor < 0.1 ? 'High' : religionFactor < 0.3 ? 'Medium' : 'Low'
+                    });
+                }
+
+                // Income factor
+                let incomeFactor = 1.0;
+                if (formData.minIncome >= 75000) {
+                    incomeFactor = ukDemographics.incomeDistribution['over75k'];
+                } else if (formData.minIncome >= 50000) {
+                    incomeFactor = ukDemographics.incomeDistribution['50k-75k'] + ukDemographics.incomeDistribution['over75k'];
+                } else if (formData.minIncome >= 35000) {
+                    incomeFactor = 0.45;
+                } else {
+                    incomeFactor = 0.70;
+                }
+                
+                probability *= incomeFactor;
+                factors.push({
+                    factor: 'Income Requirement',
+                    percentage: (incomeFactor * 100).toFixed(1),
+                    impact: incomeFactor < 0.2 ? 'High' : incomeFactor < 0.5 ? 'Medium' : 'Low'
+                });
+
+                // Education factor
+                let educationFactor = 1.0;
+                if (formData.education !== 'any') {
+                    educationFactor = ukDemographics.educationDistribution[formData.education] || 0.1;
+                }
+                
+                probability *= educationFactor;
+                if (formData.education !== 'any') {
+                    factors.push({
+                        factor: 'Education Level',
+                        percentage: (educationFactor * 100).toFixed(1),
+                        impact: educationFactor < 0.1 ? 'High' : educationFactor < 0.3 ? 'Medium' : 'Low'
+                    });
+                }
+
+                // Additional reality factors
+                const realityAdjustment = 0.3;
+                probability *= realityAdjustment;
+
+                const finalPercentage = Math.max(0.01, probability * 100);
+                
+                return {
+                    probability: finalPercentage,
+                    factors: factors,
+                    totalPool: Math.round(ukDemographics.totalMales * probability),
+                    difficulty: finalPercentage < 1 ? 'Extremely Difficult' : 
+                               finalPercentage < 5 ? 'Very Difficult' : 
+                               finalPercentage < 15 ? 'Challenging' : 
+                               finalPercentage < 30 ? 'Moderate' : 'Reasonable'
+                };
+            };
+
+            const handleSubmit = () => {
+                const calculatedResults = calculateProbability();
+                setResults(calculatedResults);
+                setShowResults(true);
+            };
+
+            const handleInputChange = (field, value) => {
+                setFormData(prev => ({
+                    ...prev,
+                    [field]: value
+                }));
+            };
+
+            const getDifficultyColor = (difficulty) => {
+                switch(difficulty) {
+                    case 'Extremely Difficult': return 'text-red-600';
+                    case 'Very Difficult': return 'text-red-500';
+                    case 'Challenging': return 'text-orange-500';
+                    case 'Moderate': return 'text-yellow-500';
+                    case 'Reasonable': return 'text-green-500';
+                    default: return 'text-gray-600';
+                }
+            };
+
+            if (showResults) {
+                return (
+                    <div className="min-h-screen bg-gradient-to-br from-pink-50 via-white to-purple-50 p-4">
+                        <div className="max-w-4xl mx-auto">
+                            <div className="bg-white rounded-3xl shadow-2xl p-8 mb-8">
+                                <div className="text-center mb-8">
+                                    <div className="flex items-center justify-center mb-4">
+                                        <div className="h-8 w-8 text-pink-500 mr-3"><Heart /></div>
+                                        <h1 className="text-3xl font-bold text-gray-800">Reality Check Results</h1>
+                                    </div>
+                                    <p className="text-gray-600">Here's what the numbers tell us about your ideal partner</p>
+                                </div>
+
+                                <div className="bg-gradient-to-r from-pink-100 to-purple-100 rounded-2xl p-8 mb-8 text-center">
+                                    <div className="flex items-center justify-center mb-4">
+                                        <div className="h-12 w-12 text-purple-600 mr-4"><Calculator /></div>
+                                        <div>
+                                            <h2 className="text-4xl font-bold text-gray-800">{results.probability.toFixed(2)}%</h2>
+                                            <p className="text-lg text-gray-600">Probability of finding your ideal man</p>
+                                        </div>
+                                    </div>
+                                    
+                                    <div className="flex items-center justify-center mt-6">
+                                        <div className="h-6 w-6 text-gray-600 mr-2"><Users /></div>
+                                        <p className="text-lg text-gray-700">
+                                            Approximately <span className="font-bold text-purple-600">{results.totalPool.toLocaleString()}</span> men in the UK match your criteria
+                                        </p>
+                                    </div>
+                                    
+                                    <div className="mt-4">
+                                        <span className={`inline-flex items-center px-4 py-2 rounded-full font-semibold ${getDifficultyColor(results.difficulty)}`}>
+                                            <div className="h-5 w-5 mr-2">
+                                                {results.difficulty === 'Extremely Difficult' || results.difficulty === 'Very Difficult' ? 
+                                                    <TrendingDown /> : <TrendingUp />
+                                                }
+                                            </div>
+                                            Difficulty: {results.difficulty}
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <div className="bg-gray-50 rounded-2xl p-6 mb-8">
+                                    <h3 className="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+                                        <div className="h-6 w-6 mr-2"><BarChart3 /></div>
+                                        Factors Affecting Your Search
+                                    </h3>
+                                    
+                                    <div className="grid md:grid-cols-2 gap-4">
+                                        {results.factors.map((factor, index) => (
+                                            <div key={index} className="bg-white rounded-xl p-4 shadow-sm">
+                                                <div className="flex justify-between items-center mb-2">
+                                                    <span className="font-semibold text-gray-700">{factor.factor}</span>
+                                                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                                                        factor.impact === 'High' ? 'bg-red-100 text-red-600' :
+                                                        factor.impact === 'Medium' ? 'bg-yellow-100 text-yellow-600' :
+                                                        'bg-green-100 text-green-600'
+                                                    }`}>
+                                                        {factor.impact} Impact
+                                                    </span>
+                                                </div>
+                                                <div className="w-full bg-gray-200 rounded-full h-2">
+                                                    <div 
+                                                        className="bg-gradient-to-r from-pink-400 to-purple-400 h-2 rounded-full transition-all duration-500"
+                                                        style={{ width: `${Math.min(100, factor.percentage)}%` }}
+                                                    ></div>
+                                                </div>
+                                                <p className="text-sm text-gray-600 mt-1">{factor.percentage}% of UK men match this criteria</p>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                <div className="bg-blue-50 border-l-4 border-blue-400 p-6 rounded-r-2xl mb-8">
+                                    <h4 className="font-bold text-blue-800 mb-2">💡 Reality Check Insights</h4>
+                                    <div className="text-blue-700 space-y-2">
+                                        {results.probability < 1 && (
+                                            <p>• Your criteria are quite specific - consider which factors are most important to you</p>
+                                        )}
+                                        {results.probability < 5 && (
+                                            <p>• Expanding your age range or location preferences could significantly increase your options</p>
+                                        )}
+                                        <p>• Remember: chemistry and compatibility can't be quantified - the "right" person might surprise you!</p>
+                                        <p>• These statistics don't account for personality, shared values, or that special spark ✨</p>
+                                    </div>
+                                </div>
+
+                                <div className="text-center">
+                                    <button
+                                        onClick={() => setShowResults(false)}
+                                        className="bg-gradient-to-r from-pink-500 to-purple-600 text-white px-8 py-3 rounded-full font-semibold hover:from-pink-600 hover:to-purple-700 transition-all duration-300 shadow-lg hover:shadow-xl"
+                                    >
+                                        Try Different Criteria
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                );
+            }
+
+            return (
+                <div className="min-h-screen bg-gradient-to-br from-pink-50 via-white to-purple-50 p-4">
+                    <div className="max-w-2xl mx-auto">
+                        <div className="bg-white rounded-3xl shadow-2xl p-8">
+                            <div className="text-center mb-8">
+                                <div className="flex items-center justify-center mb-4">
+                                    <div className="h-10 w-10 text-pink-500 mr-3"><Heart /></div>
+                                    <h1 className="text-4xl font-bold text-gray-800">Reality Check</h1>
+                                </div>
+                                <p className="text-gray-600 text-lg">
+                                    Let's find out the probability of meeting your ideal partner in the UK 🇬🇧
+                                </p>
+                            </div>
+
+                            <div className="space-y-6">
+                                <div className="bg-gray-50 rounded-2xl p-6">
+                                    <h3 className="text-lg font-semibold text-gray-800 mb-4">Age Preferences</h3>
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 mb-2">Minimum Age</label>
+                                            <input
+                                                type="number"
+                                                min="18"
+                                                max="80"
+                                                value={formData.minAge}
+                                                onChange={(e) => handleInputChange('minAge', parseInt(e.target.value))}
+                                                className="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-pink-500 focus:border-transparent"
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 mb-2">Maximum Age</label>
+                                            <input
+                                                type="number"
+                                                min="18"
+                                                max="80"
+                                                value={formData.maxAge}
+                                                onChange={(e) => handleInputChange('maxAge', parseInt(e.target.value))}
+                                                className="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-pink-500 focus:border-transparent"
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="bg-gray-50 rounded-2xl p-6">
+                                    <h3 className="text-lg font-semibold text-gray-800 mb-4">Physical Preferences</h3>
+                                    <div className="space-y-4">
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 mb-2">Minimum Height (cm)</label>
+                                            <input
+                                                type="number"
+                                                min="150"
+                                                max="220"
+                                                value={formData.minHeight}
+                                                onChange={(e) => handleInputChange('minHeight', parseInt(e.target.value))}
+                                                className="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-pink-500 focus:border-transparent"
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 mb-2">Body Type</label>
+                                            <select
+                                                value={formData.bodyType}
+                                                onChange={(e) => handleInputChange('bodyType', e.target.value)}
+                                                className="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-pink-500 focus:border-transparent"
+                                            >
+                                                <option value="any">No preference</option>
+                                                <option value="slim">Slim</option>
+                                                <option value="athletic">Athletic</option>
+                                                <option value="average">Average</option>
+                                                <option value="stocky">Stocky</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="bg-gray-50 rounded-2xl p-6">
+                                    <h3 className="text-lg font-semibold text-gray-800 mb-4">Lifestyle & Values</h3>
+                                    <div className="space-y-4">
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 mb-2">Religion</label>
+                                            <select
+                                                value={formData.religion}
+                                                onChange={(e) => handleInputChange('religion', e.target.value)}
+                                                className="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-pink-500 focus:border-transparent"
+                                            >
+                                                <option value="any">No preference</option>
+                                                <option value="christian">Christian</option>
+                                                <option value="muslim">Muslim</option>
+                                                <option value="hindu">Hindu</option>
+                                                <option value="buddhist">Buddhist</option>
+                                                <option value="jewish">Jewish</option>
+                                                <option value="none">Non-religious</option>
+                                                <option value="other">Other</option>
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 mb-2">Education Level</label>
+                                            <select
+                                                value={formData.education}
+                                                onChange={(e) => handleInputChange('education', e.target.value)}
+                                                className="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-pink-500 focus:border-transparent"
+                                            >
+                                                <option value="any">No preference</option>
+                                                <option value="high_school">High School</option>
+                                                <option value="college">College/Trade</option>
+                                                <option value="bachelors">Bachelor's Degree</option>
+                                                <option value="masters">Master's Degree</option>
+                                                <option value="phd">PhD/Doctorate</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="bg-gray-50 rounded-2xl p-6">
+                                    <h3 className="text-lg font-semibold text-gray-800 mb-4">Financial Expectations</h3>
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                                            Minimum Annual Income: £{formData.minIncome.toLocaleString()}
+                                        </label>
+                                        <input
+                                            type="range"
+                                            min="20000"
+                                            max="150000"
+                                            step="5000"
+                                            value={formData.minIncome}
+                                            onChange={(e) => handleInputChange('minIncome', parseInt(e.target.value))}
+                                            className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider"
+                                        />
+                                        <div className="flex justify-between text-sm text-gray-500 mt-1">
+                                            <span>£20k</span>
+                                            <span>£150k+</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <button
+                                    onClick={handleSubmit}
+                                    className="w-full bg-gradient-to-r from-pink-500 to-purple-600 text-white py-4 px-6 rounded-2xl font-semibold text-lg hover:from-pink-600 hover:to-purple-700 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
+                                >
+                                    Calculate My Reality Check 💕
+                                </button>
+                            </div>
+
+                            <div className="mt-6 text-center text-sm text-gray-500">
+                                <p>Based on UK demographic data • For entertainment purposes</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        ReactDOM.render(<RealityCheckApp />, document.getElementById('root'));
+    </script>
+</body>
+</html>
